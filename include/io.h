@@ -56,10 +56,9 @@ int io_tx(dev_con_t con, const uint8_t* bytes, int n);
  * @param con Open connection handle.
  * @param bytes Source buffer.
  * @param n Number of bytes to write.
- * @param timeout_ms Timeout in milliseconds.
  * @return Bytes written, possibly fewer than requested, or a negative error.
  */
-int io_tx_blocking(dev_con_t con, const uint8_t* bytes, int n, int timeout_ms);
+int io_tx_blocking(dev_con_t con, const uint8_t* bytes, int n);
 
 /**
  * Flush pending transmitted bytes.
