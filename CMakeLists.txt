@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
-project(io-lib C)
+project(io-lib VERSION 1.0.0 LANGUAGES C)
+
+include(GNUInstallDirs)
 
 include(config.cmake)
 
@@ -13,3 +15,14 @@ endif ()
 
 add_subdirectory(include)
 add_subdirectory(src)
+
+install(TARGETS ${IO_LIB}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(FILES
+        include/io.h
+        include/io_platform.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+

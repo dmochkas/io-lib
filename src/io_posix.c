@@ -8,6 +8,10 @@
 #include <string.h>
 #include <stdbool.h>
 
+int platform_sleep_ms(uint32_t ms) {
+    return usleep(ms * 1000);
+}
+
 dev_con_t io_open_serial(dev_open_addr_t port, int baudrate) {
     int fd = open(port, O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (fd == -1) {

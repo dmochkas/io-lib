@@ -2,8 +2,38 @@
 #define IO_LIB_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #include "io_platform.h"
+
+typedef struct {
+    const uint8_t* buf;
+    size_t buf_len;
+    size_t chunk;
+    size_t pos;
+} reader_t;
+
+typedef struct {
+    uint8_t* buf;
+    size_t buf_len;
+    size_t chunk;
+    size_t pos;
+} writer_t;
+
+typedef enum rx_status {
+    READ_OK, READ_MAX_BUFFER_SIZE_REACHED, READ_INVALID_PARAM, READ_CONNECTION_CLOSED, CONSUMER_NEEDS_MORE_SPACE, READ_KO
+} rx_status_t;
+
+typedef enum consumer_status {
+    CONSUMER_OK, CONSUMER_UNFINISHED, CONSUMER_KO
+} consumer_status_t;
+
+/**
+ * If returns CONSUMER_UNFINISHED the read pointer is reset to the previous position
+ * and the bytes read are increased.
+ */
+typedef consumer_status_t (*i_consumer_t) (const uint8_t*, size_t, size_t*, void*);
+//typedef consumer_status_t (*string_consumer_t) (const string_t*);
 
 /**
  * Open a serial connection.
@@ -81,6 +111,10 @@ int io_rx_drain(dev_con_t con);
  * @return Drained bytes or a negative error.
  */
 int io_rx_drain_n_bytes(dev_con_t con, uint16_t n);
+
+rx_status_t io_stateful_rx(int fd, uint16_t guard_time_ms, writer_t* w, i_consumer_t consumer, void* ctx);
+
+rx_status_t io_stateless_rx(int fd, uint16_t guard_time_ms, uint8_t* b_out, size_t b_len, i_consumer_t consumer, void* ctx);
 
 /**
  * Close a connection and release its resources.
