@@ -112,9 +112,9 @@ int io_rx_drain(dev_con_t con);
  */
 int io_rx_drain_n_bytes(dev_con_t con, uint16_t n);
 
-rx_status_t io_stateful_rx(int fd, uint16_t guard_time_ms, writer_t* w, i_consumer_t consumer, void* ctx);
+rx_status_t io_stateful_rx(dev_con_t con, uint16_t guard_time_ms, writer_t* w, i_consumer_t consumer, void* ctx);
 
-rx_status_t io_stateless_rx(int fd, uint16_t guard_time_ms, uint8_t* b_out, size_t b_len, i_consumer_t consumer, void* ctx);
+rx_status_t io_stateless_rx(dev_con_t con, uint16_t guard_time_ms, uint8_t* b_out, size_t b_len, i_consumer_t consumer, void* ctx);
 
 /**
  * Close a connection and release its resources.

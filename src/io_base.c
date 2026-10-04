@@ -6,7 +6,7 @@
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-rx_status_t io_stateful_rx(int fd, uint16_t guard_time_ms, writer_t* w, i_consumer_t consumer, void* ctx) {
+rx_status_t io_stateful_rx(dev_con_t con, uint16_t guard_time_ms, writer_t* w, i_consumer_t consumer, void* ctx) {
     rx_status_t ret = READ_OK;
 
     if (w->chunk == 0) {
@@ -30,12 +30,17 @@ rx_status_t io_stateful_rx(int fd, uint16_t guard_time_ms, writer_t* w, i_consum
             goto finish;
         }
 
-        n_read = io_rx(fd, w->buf + w->pos, MIN(w->chunk, w->buf_len - w->pos));
+        n_read = io_rx(con, w->buf + w->pos, MIN(w->chunk, w->buf_len - w->pos));
         if (n_read < 0) {
+#if defined(IO_PLATFORM_POSIX)
             if (errno != EAGAIN) {
                 ret = READ_KO;
                 goto finish;
             }
+#else
+            ret = READ_KO;
+            goto finish;
+#endif
             if (guard_time_ms == 0 || guard_flag) {
                 break;
             }
@@ -43,8 +48,17 @@ rx_status_t io_stateful_rx(int fd, uint16_t guard_time_ms, writer_t* w, i_consum
             guard_flag = true;
             continue;
         } else if (n_read == 0) {
+#if defined(IO_PLATFORM_POSIX)
             ret = READ_CONNECTION_CLOSED;
             goto finish;
+#else
+            if (guard_time_ms == 0 || guard_flag) {
+                break;
+            }
+            platform_sleep_ms(guard_time_ms);
+            guard_flag = true;
+            continue;
+#endif
         }
 
         w->pos += n_read;
@@ -99,8 +113,8 @@ rx_status_t io_stateful_rx(int fd, uint16_t guard_time_ms, writer_t* w, i_consum
     return ret;
 }
 
-rx_status_t io_stateless_rx(int fd, uint16_t guard_time_ms, uint8_t* b_out, size_t b_len, i_consumer_t consumer, void* ctx) {
-    return io_stateful_rx(fd,
+rx_status_t io_stateless_rx(dev_con_t con, uint16_t guard_time_ms, uint8_t* b_out, size_t b_len, i_consumer_t consumer, void* ctx) {
+    return io_stateful_rx(con,
                           guard_time_ms,
                           &(writer_t) {b_out, b_len, b_len, 0},
                           consumer,
