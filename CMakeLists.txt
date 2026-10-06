@@ -22,7 +22,7 @@ install(TARGETS ${IO_LIB}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(FILES
-        include/io.h
-        include/io_platform.h
+        include/public/io.h
+        include/public/io_platform.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 

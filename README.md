@@ -10,6 +10,18 @@ It is intended to provide a consistent interface for basic serial/device communi
 
 The first backend scenario is POSIX-style serial I/O, but the API is designed to be portable so platform-specific implementations can share the same application-facing interface.
 
+## Conan
+
+Posix:
+```bash
+conan create . -pr:a default
+```
+
+STM32:
+```bash
+conan create . -pr:b default -pr:h stm32 -o:a platform=stm32
+```
+
 ## Goals
 
 - Hide platform-specific open/read/write/close details behind a common API

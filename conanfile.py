@@ -1,10 +1,11 @@
 from conan import ConanFile
+from conan.errors import ConanInvalidConfiguration
 from conan.tools.cmake import CMake, CMakeToolchain, cmake_layout
 
 
 class IoLibConan(ConanFile):
     name = "io-lib"
-    version = "1.0.0-1"
+    version = "1.0.0-2"
     package_type = "library"
     user = "dochkas"
     channel = "experimental"
@@ -28,6 +29,12 @@ class IoLibConan(ConanFile):
 
     no_copy_source = True
 
+    # def configure(self):
+    #     if self.options.platform == "stm32" and not self.settings.os == "baremetal" and not self.settings.arch.startswith("arm"):
+    #         raise ConanInvalidConfiguration("Shared lib is not supported")
+    #
+    #     if self.options.platform == "stm32" and self.options.shared == True:
+    #         raise ConanInvalidConfiguration("Shared lib is not supported")
 
     def layout(self):
         cmake_layout(self)
@@ -35,6 +42,7 @@ class IoLibConan(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
+        tc.variables["CMAKE_TRY_COMPILE_TARGET_TYPE"] = "STATIC_LIBRARY"
         tc.variables["IO_LIB"] = "io-lib"
         tc.variables["IO_PLATFORM"] = str(self.options.platform)
         tc.variables["BUILD_SHARED_LIBS"] = bool(self.options.shared)

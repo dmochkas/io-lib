@@ -2,11 +2,7 @@
 
 #include <string.h>
 
-#ifndef IO_STM32_HAL_HEADER
-#define IO_STM32_HAL_HEADER "stm32f4xx_hal.h"
-#endif
-
-#include IO_STM32_HAL_HEADER
+#include "stm32_hal_al.h"
 
 static int hal_receive(UART_HandleTypeDef* uart, uint8_t* bytes, uint16_t n, uint32_t timeout) {
     if (uart == NULL || bytes == NULL || n == 0) {
